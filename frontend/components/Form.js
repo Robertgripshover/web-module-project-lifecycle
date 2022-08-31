@@ -9,7 +9,7 @@ export default class Form extends React.Component {
       <>
         <form id='todoForm' onSubmit={this.props.onTodoFormSubmit}>
         <input
-           value={this.props.state.todoNameInput}
+           value={this.props.todoNameInput}
            onChange={this.props.onTodoNameInputChange}
            type='text'
            placeholder='Type todo'>
@@ -19,7 +19,7 @@ export default class Form extends React.Component {
         <button
           onClick={this.props.toggleDisplayCompleteds}
         >
-            {this.props.state.displayCompleteds ? "Hide" : "Show"} Completed
+            {this.props.displayCompleteds ? "Hide" : "Show"} Completed
         </button>
       </>
     )
