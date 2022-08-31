@@ -10,6 +10,7 @@ export default class App extends React.Component {
     todos: [], 
     error: '',
     todoNameInput: '',
+    displayCompleteds: true,
   }
 
   onTodoNameInputChange = evt => {
@@ -50,12 +51,20 @@ export default class App extends React.Component {
 
   //now we need to make a helper to send a new todo to axios
 
-  toggleCompleted = id => evt => {
+  toggleCompleted = id => () => {
     axios.patch(`${URL}/${id}`)
       .then(res => {
-
+        this.setState({...this.state, todos: this.state.todos.map(td => {
+            if (td.id !== id) return td
+            return res.data.data
+          })
+        })
       })
       .catch(this.setAxiosResponseError)
+  }
+
+  toggleDisplayCompleteds = () => {
+    this.setState({...this.state, displayCompleteds: !this.state.displayCompleteds})
   }
 
   componentDidMount() {
@@ -71,16 +80,20 @@ export default class App extends React.Component {
         <div id="todos">
         <h2>Todos:</h2>
          {
-          this.state.todos.map(td => {
-            return <div onClick={this.toggleCompleted(td.id)} key={td.id}>{td.name} {td.completed ? ' ✔️' : ''}</div>
-          })
+          this.state.todos.reduce((acc, td) => {
+            if (this.state.displayCompleteds || !td.completed) return acc.concat(
+              <div onClick={this.toggleCompleted(td.id)} key={td.id}>{td.name} {td.completed ? ' ✔️' : ''}</div>)
+            return acc
+          }, [])   
+            
+          
          } 
         </div>
         <form id='todoForm' onSubmit={this.onTodoFormSubmit}>
           <input value={this.state.todoNameInput} onChange={this.onTodoNameInputChange} type='text' placeholder='Type todo'></input>
           <input type='submit'></input>
-          <button>Clear Completed</button>
-        </form>
+       </form>
+       <button onClick={this.toggleDisplayCompleteds}>{this.state.displayCompleteds ? "Hide" : "Show"} Completed</button>
       </div>
     )
   }
