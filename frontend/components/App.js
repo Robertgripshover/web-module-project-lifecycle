@@ -27,7 +27,7 @@ export default class App extends React.Component {
   postNewTodo = () => {
     axios.post(URL, {name: this.state.todoNameInput})
       .then(res => {
-        this.fetchAllTodos()
+        this.setState({...this.state, todos: this.state.todos.concat(res.data.data) })
         this.resetForm()//this bad boy it putting the input box back to normal,
         //bassically you also just to 'this.' and then whatever helper function you have to call it
       })
@@ -50,6 +50,13 @@ export default class App extends React.Component {
 
   //now we need to make a helper to send a new todo to axios
 
+  toggleCompleted = id => evt => {
+    axios.patch(`${URL}/${id}`)
+      .then(res => {
+
+      })
+      .catch(this.setAxiosResponseError)
+  }
 
   componentDidMount() {
     this.fetchAllTodos()
@@ -65,7 +72,7 @@ export default class App extends React.Component {
         <h2>Todos:</h2>
          {
           this.state.todos.map(td => {
-            return <div key={td.id}>{td.name}</div>
+            return <div onClick={this.toggleCompleted(td.id)} key={td.id}>{td.name} {td.completed ? ' ✔️' : ''}</div>
           })
          } 
         </div>
